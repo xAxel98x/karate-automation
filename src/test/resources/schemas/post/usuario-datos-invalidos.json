@@ -1,0 +1,4 @@
+{
+  "email": "email deve ser um email válido",
+  "administrador": "administrador deve ser 'true' ou 'false'"
+}
