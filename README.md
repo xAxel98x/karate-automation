@@ -1,6 +1,3 @@
-QA Backend - Automatización CRUD Usuarios con Karate DSL
-Automatización de pruebas para el CRUD de usuarios de ServeRest utilizando Karate DSL.
-
 📋 Requisitos
 Java 11 o superior
 Maven 3.6 o superior
