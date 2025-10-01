@@ -1,0 +1,44 @@
+name: Run Karate Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Execute Karate Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Descargar el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Instalar JDK (usa la versión que tengas en local)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3️⃣ Cachear dependencias Maven para acelerar builds
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # 4️⃣ Ejecutar las pruebas Karate
+      - name: Run Karate tests
+        run: mvn test -Dkarate.options="--reportDir=target/karate-reports"
+
+      # 5️⃣ Subir los reportes HTML como artefacto descargable
+      - name: Upload Karate HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: karate-report
+          path: target/karate-reports/
