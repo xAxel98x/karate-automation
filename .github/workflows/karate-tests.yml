@@ -31,11 +31,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 4️⃣ Ejecutar los tests Karate
+      # 4️⃣ Ejecutar los tests Karate (sin --reportDir)
       - name: Run Karate tests
         run: |
           echo "🏃 Ejecutando pruebas Karate..."
-          mvn test -Dtest=runner.TestRunner -Dkarate.options="--reportDir=target/karate-reports"
+          mvn test -Dtest=runner.TestRunner
 
       # 5️⃣ Mostrar rutas donde existen reportes (debug)
       - name: Show Karate report locations
