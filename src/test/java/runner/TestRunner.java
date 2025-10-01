@@ -5,9 +5,8 @@ import com.intuit.karate.junit5.Karate;
 class TestRunner {
 
     @Karate.Test
-    Karate testAll() {
-        return Karate.run("classpath:features")
-                .tags("@usuarios")
-                .relativeTo(getClass());
+    Karate runAll() {
+        // Esto ejecuta TODOS los .feature dentro de src/test/resources/features
+        return Karate.run("classpath:features").relativeTo(getClass());
     }
 }
