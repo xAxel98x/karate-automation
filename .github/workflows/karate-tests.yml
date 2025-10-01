@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Descargar el código
+      # 1️⃣ Clonar el código
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -31,19 +31,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 4️⃣ Ejecutar los tests Karate (asegurando ruta correcta)
+      # 4️⃣ Ejecutar los tests Karate
       - name: Run Karate tests
-        run: mvn test -Dtest=runner.TestRunner -Dkarate.options="--reportDir=target/karate-reports"
-
-      # 5️⃣ Mostrar estructura del target (debug)
-      - name: Show target directory
         run: |
-          echo "🔍 Listing target folder after tests:"
-          find . -type d -name "karate-reports" || echo "❌ No karate-reports found"
+          echo "🏃 Ejecutando pruebas Karate..."
+          mvn test -Dtest=runner.TestRunner -Dkarate.options="--reportDir=target/karate-reports"
 
-      # 6️⃣ Subir reporte HTML como artefacto
+      # 5️⃣ Mostrar rutas donde existen reportes (debug)
+      - name: Show Karate report locations
+        run: |
+          echo "🔍 Buscando reportes Karate en todo el workspace..."
+          find $GITHUB_WORKSPACE -type f -name "karate-summary.html" || echo "❌ No se encontró el reporte"
+
+      # 6️⃣ Subir el reporte (busca en todo el workspace)
       - name: Upload Karate HTML report
         uses: actions/upload-artifact@v4
         with:
           name: karate-report
-          path: '**/karate-reports/**'
+          path: '**/target/karate-reports/**'
+          if-no-files-found: warn
