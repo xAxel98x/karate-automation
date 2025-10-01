@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
 
     steps:
       - name: Checkout repository
@@ -28,24 +31,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Clean Maven
+        run: mvn clean
+
       - name: Run Karate tests
         run: mvn test -Dtest=runner.TestRunner
 
-      # 📄 Mostrar logs de los reportes surefire (aunque falle)
-      - name: Show Surefire report summary
-        if: always()
-        run: |
-          echo "🧪 Resumen de los reportes surefire:"
-          find . -type f -path "*/surefire-reports/*.txt" -exec echo "----- {} -----" \; -exec cat {} \;
-
-      # 🔍 Mostrar ubicación del reporte HTML Karate
       - name: Show Karate report locations
         if: always()
         run: |
-          echo "🔍 Buscando reportes Karate en todo el workspace..."
+          echo "🔍 Buscando reportes Karate..."
           find $GITHUB_WORKSPACE -type f -name "karate-summary.html" || echo "❌ No se encontró el reporte"
 
-      # 📦 Subir reporte HTML aunque haya fallos
       - name: Upload Karate HTML report
         if: always()
         uses: actions/upload-artifact@v4
