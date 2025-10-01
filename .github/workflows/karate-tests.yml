@@ -11,18 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Clonar el código
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Configurar Java
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3️⃣ Cache de dependencias Maven
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
@@ -31,20 +28,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 4️⃣ Ejecutar los tests Karate (sin --reportDir)
       - name: Run Karate tests
-        run: |
-          echo "🏃 Ejecutando pruebas Karate..."
-          mvn test -Dtest=runner.TestRunner
+        run: mvn test -Dtest=runner.TestRunner
 
-      # 5️⃣ Mostrar rutas donde existen reportes (debug)
+      # 📄 Mostrar logs de los reportes surefire (aunque falle)
+      - name: Show Surefire report summary
+        if: always()
+        run: |
+          echo "🧪 Resumen de los reportes surefire:"
+          find . -type f -path "*/surefire-reports/*.txt" -exec echo "----- {} -----" \; -exec cat {} \;
+
+      # 🔍 Mostrar ubicación del reporte HTML Karate
       - name: Show Karate report locations
+        if: always()
         run: |
           echo "🔍 Buscando reportes Karate en todo el workspace..."
           find $GITHUB_WORKSPACE -type f -name "karate-summary.html" || echo "❌ No se encontró el reporte"
 
-      # 6️⃣ Subir el reporte (busca en todo el workspace)
+      # 📦 Subir reporte HTML aunque haya fallos
       - name: Upload Karate HTML report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: karate-report
